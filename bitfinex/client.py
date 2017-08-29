@@ -339,6 +339,34 @@ class TradeClient:
 
         return json_resp
 
+    def withdraw(self, amount, address, withdraw_type="bitcoin",
+                 walletselected="deposit", **kwargs):
+        """
+        View you balance ledger entries
+        :param amount: Amount to withdraw.
+        :param address: Destination address for withdrawal.
+        :param withdraw_type: can be one of the following ['bitcoin',
+        'litecoin', 'ethereum', 'ethereumc', 'mastercoin', 'zcash',
+        'monero', 'wire', 'dash', 'ripple', 'eos'].
+        :param walletselected: The wallet to withdraw from, can be “trading”,
+        “exchange”, or “deposit”.
+        :param kwargs: any other parameter
+        from https://docs.bitfinex.com/v1/reference#rest-auth-withdrawal
+        """
+        payload = {
+            "request": "/v1/withdraw",
+            "nonce": self._nonce,
+            "amount": amount,
+            "address": address,
+            "withdraw_type": withdraw_type,
+            "walletselected": walletselected
+        }
+        payload.update(kwargs)
+        signed_payload = self._sign_payload(payload)
+        r = requests.post(self.URL + "/withdraw", headers=signed_payload, verify=True)
+        json_resp = r.json()
+
+        return json_resp
 
 
 class Client:
